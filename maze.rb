@@ -10,13 +10,14 @@ class Maze
     @width = width.even? ? width + 1 : width
     @nodes = @height.times.map do |row|
       if row.even?
-        Array.new(@width) { Wall.new }
+        Array.new(@width) { |column| Wall.new(row, column) }
       else
         @width.times.map do |column|
-          column.even? ? Wall.new : Node.new(row, column)
+          column.even? ? Wall.new(row, column) : Node.new(row, column)
         end
       end
     end
+    puts self.paint
   end
 
   def paint
@@ -27,47 +28,45 @@ class Maze
   end
 
   def make
-    @nodes[0][1].break
-    @nodes[-1][-2].break
+    draw(@nodes[0][1].path)
+    draw(@nodes[-1][-2].path)
     make_path(@nodes[1][1], @nodes[-2][-2])
     self
   end
 
   def solve
-    @nodes[0][1].visit
+    draw(@nodes[0][1].visit)
     solve_path(@nodes[1][1], @nodes[-2][-2])
-    @nodes[-1][-2].visit
+    draw(@nodes[-1][-2].visit)
     self
   end
 
   private
 
   def make_path(node, previous)
-    node.use
+    draw(node.path) unless node.path?
     return true if last_node?(node)
-    next_node = neighbors(node).select { |n| !n.used? }.sample
+    next_node = neighbors(node).reject { |n| n.path? }.sample
     if next_node
-      show_step
-      get_wall(node, next_node).break
+      draw(get_wall(node, next_node).path)
       make_path(next_node, node)
       make_path(node, previous)
     end
   end
 
   def solve_path(node, previous)
-    node.visit
+    draw(node.visit) unless node.visited?
     return true if last_node?(node)
     next_node = neighbors(node).reject do |n|
-      n.visited? || !get_wall(node, n).broken?
+      n.visited? || !get_wall(node, n).path?
     end .sample
     if next_node
-      show_step
-      get_wall(node, next_node).visit
+      draw(get_wall(node, next_node).visit)
       if solve_path(next_node, node)
         true
       else
-        get_wall(node, next_node).dead_end
-        next_node.dead_end
+        draw(get_wall(node, next_node).dead_end)
+        draw(next_node.dead_end)
         solve_path(node, previous)
       end
     end
@@ -97,6 +96,17 @@ class Maze
     @nodes[row][column]
   end
 
+  def draw(node)
+    print "\r"
+    print "\e[A" * (height - node.row)
+    print "\e[C" * 2 * node.column
+    print "\e[2X"
+    print node.paint
+    print "\e[B" * (height - node.row)
+    print "\r"
+    sleep(0.0005)
+  end
+
   def show_step
     puts self.paint
     sleep(0.09)
@@ -105,5 +115,5 @@ class Maze
 end
 
 puts
-m = Maze.new(25, 40).make.solve
-puts "#{m.paint}\n"
+Maze.new(50, 80).make.solve
+puts

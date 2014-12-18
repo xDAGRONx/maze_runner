@@ -5,28 +5,31 @@ class Node
     @row = row
     @column = column
     @visited = false
-    @used = false
+    @path = false
     @dead_end = false
+  end
+
+  def path
+    @path = true
+    self
+  end
+
+  def path?
+    @path
   end
 
   def visit
     @visited = true
+    self
   end
 
   def visited?
     @visited
   end
 
-  def use
-    @used = true
-  end
-
-  def used?
-    @used
-  end
-
   def dead_end
     @dead_end = true
+    self
   end
 
   def dead_end?
