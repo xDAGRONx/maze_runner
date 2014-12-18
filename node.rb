@@ -6,6 +6,7 @@ class Node
     @column = column
     @visited = false
     @used = false
+    @dead_end = false
   end
 
   def visit
@@ -24,7 +25,19 @@ class Node
     @used
   end
 
-  def to_s
-    visited? ? 'o' : ' '
+  def dead_end
+    @dead_end = true
+  end
+
+  def dead_end?
+    @dead_end
+  end
+
+  def paint
+    if visited?
+      dead_end? ? Paint['  ', nil, :red] : Paint['  ', nil, :green]
+    else
+      '  '
+    end
   end
 end

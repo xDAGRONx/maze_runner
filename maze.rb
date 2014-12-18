@@ -1,3 +1,4 @@
+require 'paint'
 require './node'
 require './wall'
 
@@ -18,9 +19,9 @@ class Maze
     end
   end
 
-  def to_s
+  def paint
     @nodes.each_with_object('') do |row, result|
-      row.each { |node| result << " #{node}" }
+      row.each { |node| result << node.paint }
       result << "\n"
     end
   end
@@ -33,7 +34,9 @@ class Maze
   end
 
   def solve
+    @nodes[0][1].visit
     solve_path(@nodes[1][1], @nodes[-2][-2])
+    @nodes[-1][-2].visit
     self
   end
 
@@ -44,9 +47,7 @@ class Maze
     return true if last_node?(node)
     next_node = neighbors(node).select { |n| !n.used? }.sample
     if next_node
-      puts `clear`
-      puts self
-      sleep(0.1)
+      show_step
       get_wall(node, next_node).break
       make_path(next_node, node)
       make_path(node, previous)
@@ -60,11 +61,15 @@ class Maze
       n.visited? || !get_wall(node, n).broken?
     end .sample
     if next_node
-      puts `clear`
-      puts self
-      sleep(0.1)
+      show_step
       get_wall(node, next_node).visit
-      solve_path(next_node, node) || solve_path(node, previous)
+      if solve_path(next_node, node)
+        true
+      else
+        get_wall(node, next_node).dead_end
+        next_node.dead_end
+        solve_path(node, previous)
+      end
     end
   end
 
@@ -91,10 +96,14 @@ class Maze
     column = (node.column + other_node.column) / 2
     @nodes[row][column]
   end
+
+  def show_step
+    puts self.paint
+    sleep(0.09)
+    print "\r" + ("\e[A" * height) + "\e[J"
+  end
 end
 
-m = Maze.new(50, 70).make.solve
 puts
-puts '=' * (m.width * 2)
-puts
-puts m
+m = Maze.new(25, 40).make.solve
+puts "#{m.paint}\n"

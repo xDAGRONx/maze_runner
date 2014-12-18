@@ -2,6 +2,7 @@ class Wall
   def initialize
     @broken = false
     @visited = false
+    @dead_end = false
   end
 
   def break
@@ -20,11 +21,23 @@ class Wall
     @visited
   end
 
-  def to_s
+  def dead_end
+    @dead_end = true
+  end
+
+  def dead_end?
+    @dead_end
+  end
+
+  def paint
     if broken?
-      visited? ? 'o' : ' '
+      if visited?
+        dead_end? ? Paint['  ', nil, :red] : Paint['  ', nil, :green]
+      else
+        '  '
+      end
     else
-      'W'
+      Paint['  ', nil, 46]
     end
   end
 end
