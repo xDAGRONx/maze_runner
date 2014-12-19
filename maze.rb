@@ -5,7 +5,8 @@ require './wall'
 class Maze
   attr_reader :height, :width
 
-  def initialize(height, width)
+  def initialize(height, width, display_time = 0.0005)
+    @display_time = display_time
     @height = height.even? ? height + 1 : height
     @width = width.even? ? width + 1 : width
     @nodes = @height.times.map do |row|
@@ -104,7 +105,7 @@ class Maze
     print node.paint
     print "\e[B" * (height - node.row)
     print "\r"
-    sleep(0.0005)
+    sleep(@display_time)
   end
 
   def show_step
