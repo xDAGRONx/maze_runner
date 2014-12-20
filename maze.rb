@@ -118,7 +118,3 @@ class Maze
     print "\r" + ("\e[A" * height) + "\e[J"
   end
 end
-
-puts
-Maze.new(50, 80).make.solve
-puts
