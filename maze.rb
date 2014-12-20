@@ -28,6 +28,10 @@ class Maze
     end
   end
 
+  def erase
+    print "\r" + ("\e[A" * height) + "\e[J"
+  end
+
   def make
     draw(@nodes[0][1].path)
     draw(@nodes[-1][-2].path)
