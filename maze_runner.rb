@@ -6,6 +6,7 @@ module MazeRunner
     attr_accessor :options
   end
 
+  @done = false
   @options = {
     height: 25,
     width: 40,
@@ -23,16 +24,26 @@ module MazeRunner
 
   def self.run
     puts
+    graceful_exit
     (0...options[:iterations]).each do
       m = maze.make.solve
       sleep(2)
       m.erase
+      break if done?
     end
 
     puts "Hope you enjoyed the show!"
   end
 
+  def self.done?
+    @done
+  end
+
   private
+
+  def self.graceful_exit
+    trap('INT') { @done = true }
+  end
 
   def self.option_parser
     OptionParser.new do |opts|

@@ -105,7 +105,6 @@ class Maze
     print "\r"
     print "\e[A" * (height - node.row)
     print "\e[C" * 2 * node.column
-    print "\e[2X"
     print node.paint
     print "\e[B" * (height - node.row)
     print "\r"
