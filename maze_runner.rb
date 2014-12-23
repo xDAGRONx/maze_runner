@@ -1,18 +1,18 @@
 require 'optparse'
+require 'highline/system_extensions'
 require './maze'
 
 module MazeRunner
-  class << self
-    attr_accessor :options
-  end
-
   @done = false
-  @options = {
-    height: 25,
-    width: 40,
-    display_time: 0.005,
-    iterations: Float::INFINITY
-  }
+
+  def self.options
+    @options ||= {
+      height: terminal_height - 4,
+      width: terminal_width / 2 - 2,
+      display_time: 0.005,
+      iterations: Float::INFINITY
+    }
+  end
 
   def self.parse(args)
     option_parser.parse!(args)
@@ -40,6 +40,14 @@ module MazeRunner
   end
 
   private
+
+  def self.terminal_width
+    HighLine::SystemExtensions.terminal_size.first
+  end
+
+  def self.terminal_height
+    HighLine::SystemExtensions.terminal_size.last
+  end
 
   def self.graceful_exit
     trap('INT') { @done = true }
