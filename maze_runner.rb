@@ -50,7 +50,7 @@ module MazeRunner
   end
 
   def self.graceful_exit
-    trap('INT') { @done = true }
+    trap('INT') { done? ? exit : @done = true }
   end
 
   def self.option_parser
