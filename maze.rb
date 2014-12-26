@@ -1,6 +1,7 @@
 require 'paint'
 require './node'
 require './wall'
+require './path'
 
 class Maze
   attr_reader :height, :width
@@ -42,6 +43,7 @@ class Maze
   def solve
     draw(@nodes[0][1].visit)
     solve_path(@nodes[1][1], @nodes[-2][-2])
+    # breadth_solve_path([Path.new([@nodes[1][1]])])
     draw(@nodes[-1][-2].visit)
     self
   end
@@ -56,6 +58,24 @@ class Maze
       draw(get_wall(node, next_node).path)
       make_path(next_node, node)
       make_path(node, previous)
+    end
+  end
+
+  def breadth_solve_path(paths)
+    paths.each { |p| draw(p.last.visit) unless p.last.visited? }
+    return true if paths.any? { |p| last_node?(p.last) }
+
+    sub_paths = paths.flat_map do |path|
+      neighbors(path.last).reject do |n|
+        n.visited? || !get_wall(path.last, n).path?
+      end .map do |n|
+        Path.new(path.nodes, n)
+      end
+    end
+
+    unless sub_paths.empty?
+      sub_paths.each { |p| draw(get_wall(p.last, p.previous).visit) }
+      breadth_solve_path(sub_paths)
     end
   end
 
