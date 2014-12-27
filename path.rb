@@ -1,5 +1,5 @@
 class Path
-  attr_reader :nodes
+  attr_accessor :nodes
 
   def initialize(nodes, *extras)
     @nodes = nodes + extras

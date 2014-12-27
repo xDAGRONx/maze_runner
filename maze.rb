@@ -65,11 +65,22 @@ class Maze
     paths.each { |p| draw(p.last.visit) unless p.last.visited? }
     return true if paths.any? { |p| last_node?(p.last) }
 
-    sub_paths = paths.flat_map do |path|
-      neighbors(path.last).reject do |n|
+    sub_paths = []
+    paths.each_with_index do |path, i|
+      branches = neighbors(path.last).reject do |n|
         n.visited? || !get_wall(path.last, n).path?
-      end .map do |n|
-        Path.new(path.nodes, n)
+      end .map { |n| Path.new(path.nodes, n) }
+
+      if branches.empty?
+        paths.values_at(0...i, (i + 1)..-1).each do |p|
+          path.nodes -= p.nodes
+        end
+        path.nodes.shuffle.each do |n|
+          draw(n.dead_end)
+          open_walls(n).each { |w| draw(w.dead_end) unless w.dead_end? }
+        end
+      else
+        sub_paths.concat(branches)
       end
     end
 
@@ -113,6 +124,15 @@ class Maze
   def get_node(row, column)
     return nil if row < 0 || column < 0
     @nodes[row][column] if row < @height && column < @width
+  end
+
+  def open_walls(node)
+    [
+      get_node(node.row - 1, node.column),
+      get_node(node.row + 1, node.column),
+      get_node(node.row, node.column - 1),
+      get_node(node.row, node.column + 1)
+    ].compact.select { |w| w.path? }
   end
 
   def get_wall(node, other_node)
