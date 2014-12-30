@@ -64,9 +64,10 @@ class Maze
   def breadth_solve_path(paths)
     paths.each { |p| draw(p.last.visit) unless p.last.visited? }
     if finale = paths.find { |p| last_node?(p.last) }
-      (paths.flat_map(&:nodes) - finale.nodes).shuffle.each do |n|
+      dead_nodes = (paths.flat_map(&:nodes) - finale.nodes)
+      dead_nodes.concat(dead_nodes.flat_map { |n| open_walls(n) })
+      dead_nodes.shuffle.each do |n|
         draw(n.dead_end) unless n.dead_end?
-        open_walls(n).each { |w| draw(w.dead_end) unless w.dead_end? }
       end
       return true
     end
