@@ -82,10 +82,10 @@ class Maze
         paths.values_at(0...i, (i + 1)..-1).each do |p|
           path.nodes -= p.nodes
         end
-        path.nodes.shuffle.each do |n|
-          draw(n.dead_end)
-          open_walls(n).each { |w| draw(w.dead_end) unless w.dead_end? }
-        end
+        (path.nodes + path.nodes.flat_map { |n| open_walls(n) })
+          .shuffle.each do |n|
+            draw(n.dead_end) unless n.dead_end?
+          end
       else
         sub_paths.concat(branches)
       end
