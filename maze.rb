@@ -6,8 +6,9 @@ require './path'
 class Maze
   attr_reader :height, :width
 
-  def initialize(height, width, display_time = 0.0005)
+  def initialize(height, width, display_time = 0.0005, show_make = false)
     @display_time = display_time
+    @show_make = show_make
     @height = height.even? ? height + 1 : height
     @width = width.even? ? width + 1 : width
     @nodes = @height.times.map do |row|
@@ -34,8 +35,8 @@ class Maze
   end
 
   def make
-    draw(@nodes[0][1].path)
-    draw(@nodes[-1][-2].path)
+    draw_make(@nodes[0][1].path)
+    draw_make(@nodes[-1][-2].path)
     make_path(@nodes[1][1], @nodes[-2][-2])
     self
   end
@@ -51,11 +52,11 @@ class Maze
   private
 
   def make_path(node, previous)
-    draw(node.path) unless node.path?
+    draw_make(node.path) unless node.path?
     return true if last_node?(node)
     next_node = neighbors(node).reject { |n| n.path? }.sample
     if next_node
-      draw(get_wall(node, next_node).path)
+      draw_make(get_wall(node, next_node).path)
       make_path(next_node, node)
       make_path(node, previous)
     end
@@ -148,13 +149,21 @@ class Maze
     @nodes[row][column]
   end
 
-  def draw(node)
+  def draw_make(node)
+    @show_make ? draw(node) : quick_draw(node)
+  end
+
+  def quick_draw(node)
     print "\r"
     print "\e[A" * (height - node.row)
     print "\e[C" * 2 * node.column
     print node.paint
     print "\e[B" * (height - node.row)
     print "\r"
+  end
+
+  def draw(node)
+    quick_draw(node)
     sleep(@display_time)
   end
 
