@@ -10,6 +10,7 @@ module MazeRunner
       height: terminal_height - 4,
       width: terminal_width / 2 - 2,
       display_time: 0.005,
+      show_make: false,
       iterations: Float::INFINITY
     }
   end
@@ -19,7 +20,8 @@ module MazeRunner
   end
 
   def self.maze
-    Maze.new(options[:height], options[:width], options[:display_time])
+    Maze.new(options[:height], options[:width],
+      options[:display_time], options[:show_make])
   end
 
   def self.run
@@ -75,6 +77,10 @@ module MazeRunner
 
       opts.on('-i', '--iterations N', Integer, 'Display N mazes') do |n|
         options[:iterations] = n
+      end
+
+      opts.on('-s', '--[no-]show-make', 'Display steps to create maze') do |m|
+        options[:show_make] = m
       end
 
       opts.on_tail('--help', "Show this message") do
