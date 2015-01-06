@@ -154,12 +154,7 @@ class Maze
   end
 
   def quick_draw(node)
-    print "\r"
-    print "\e[A" * (height - node.row)
-    print "\e[C" * 2 * node.column
-    print node.paint
-    print "\e[B" * (height - node.row)
-    print "\r"
+    node.draw(self)
   end
 
   def draw(node)

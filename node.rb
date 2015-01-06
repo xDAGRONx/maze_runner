@@ -36,6 +36,15 @@ class Node
     @dead_end
   end
 
+  def draw(maze)
+    print "\r"
+    print "\e[A" * (maze.height - row)
+    print "\e[C" * 2 * column
+    print paint
+    print "\e[B" * (maze.height - row)
+    print "\r"
+  end
+
   def paint
     if visited?
       dead_end? ? Paint['  ', nil, :red] : Paint['  ', nil, :green]
