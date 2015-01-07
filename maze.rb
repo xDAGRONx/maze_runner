@@ -34,6 +34,22 @@ class Maze
     print "\r" + ("\e[A" * height) + "\e[J"
   end
 
+  def start
+    @nodes[1][1]
+  end
+
+  def finish
+    @nodes[-2][-2]
+  end
+
+  def entrance
+    @nodes[0][1]
+  end
+
+  def exit
+    @nodes[-1][-2]
+  end
+
   def make
     draw_make(@nodes[0][1].path)
     draw_make(@nodes[-1][-2].path)
