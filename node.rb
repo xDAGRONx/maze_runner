@@ -36,6 +36,10 @@ class Node
     @dead_end
   end
 
+  def ==(other)
+    row == other.row && column == other.column
+  end
+
   def draw(maze)
     print "\r"
     print "\e[A" * (maze.height - row)
