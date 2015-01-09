@@ -34,6 +34,11 @@ class Maze
     print "\r" + ("\e[A" * height) + "\e[J"
   end
 
+  def get_node(row, column)
+    return nil if row < 0 || column < 0
+    @nodes[row][column] if row < @height && column < @width
+  end
+
   def start
     @nodes[1][1]
   end
@@ -143,11 +148,6 @@ class Maze
 
   def last_node?(node)
     node.row == @height - 2 && node.column == @width - 2
-  end
-
-  def get_node(row, column)
-    return nil if row < 0 || column < 0
-    @nodes[row][column] if row < @height && column < @width
   end
 
   def open_walls(node)
