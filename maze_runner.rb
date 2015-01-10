@@ -1,6 +1,7 @@
 require 'optparse'
 require 'highline/system_extensions'
 require './maze'
+require './builder'
 
 module MazeRunner
   @done = false
@@ -28,7 +29,9 @@ module MazeRunner
     puts
     graceful_exit
     (0...options[:iterations]).each do
-      m = maze.make.solve
+      m = maze
+      Builder.new(m, options[:show_make], options[:display_time]).run
+      m.solve
       sleep(2)
       m.erase
       break if done?
