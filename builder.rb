@@ -1,53 +1,39 @@
 class Builder
-  attr_reader :maze, :show, :display_time
-  alias_method :show?, :show
+  attr_reader :maze, :path
 
-  def initialize(maze, show = false, display_time = 0.0005)
+  def self.path(maze)
+    result = new(maze).run.path
+    result.each { |n| yield n } if block_given?
+    result
+  end
+
+  def initialize(maze)
     @maze = maze
-    @show = show
-    @display_time = display_time
     @path = []
   end
 
-  def path
-    if @path.empty?
-      @path << maze.entrance.path
-      @path << maze.exit.path
+  def run
+    unless built?
+      path << maze.entrance.path
+      path << maze.exit.path
       build_path(maze.start, maze.finish)
     end
-    @path
-  end
-
-  def run
-    draw(maze.entrance.path)
-    draw(maze.exit.path)
-    build(maze.start, maze.finish)
-    unless show?
-      maze.erase
-      puts maze.paint
-      sleep(display_time)
-    end
+    self
   end
 
   private
 
-  def build_path(node, previous)
-    @path << node.path unless node.path?
-    return true if node == maze.finish
-    if next_node = unvisited_neighbors(node).sample
-      @path << get_wall(node, next_node).path
-      build_path(next_node, node)
-      build_path(node, previous)
-    end
+  def built?
+    !path.empty?
   end
 
-  def build(node, previous)
-    draw(node.path) unless node.path?
+  def build_path(node, previous)
+    path << node.path unless node.path?
     return true if node == maze.finish
     if next_node = unvisited_neighbors(node).sample
-      draw(get_wall(node, next_node).path)
-      build(next_node, node)
-      build(node, previous)
+      path << get_wall(node, next_node).path
+      build_path(next_node, node)
+      build_path(node, previous)
     end
   end
 
@@ -68,12 +54,5 @@ class Builder
     row = (node.row + other_node.row) / 2
     column = (node.column + other_node.column) / 2
     maze.get_node(row, column)
-  end
-
-  def draw(node)
-    if show?
-      node.draw(maze)
-      sleep(display_time)
-    end
   end
 end

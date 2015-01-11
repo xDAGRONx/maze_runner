@@ -30,7 +30,10 @@ module MazeRunner
     graceful_exit
     (0...options[:iterations]).each do
       m = maze
-      Builder.new(m, options[:show_make], options[:display_time]).run
+      Builder.path(m) do |n|
+        n.draw(m)
+        sleep(options[:display_time]) if options[:show_make]
+      end
       m.solve
       sleep(2)
       m.erase
