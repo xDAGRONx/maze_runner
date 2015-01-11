@@ -6,6 +6,16 @@ class Builder
     @maze = maze
     @show = show
     @display_time = display_time
+    @path = []
+  end
+
+  def path
+    if @path.empty?
+      @path << maze.entrance.path
+      @path << maze.exit.path
+      build_path(maze.start, maze.finish)
+    end
+    @path
   end
 
   def run
@@ -20,6 +30,16 @@ class Builder
   end
 
   private
+
+  def build_path(node, previous)
+    @path << node.path unless node.path?
+    return true if node == maze.finish
+    if next_node = unvisited_neighbors(node).sample
+      @path << get_wall(node, next_node).path
+      build_path(next_node, node)
+      build_path(node, previous)
+    end
+  end
 
   def build(node, previous)
     draw(node.path) unless node.path?
