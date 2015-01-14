@@ -2,6 +2,8 @@ require 'optparse'
 require 'highline/system_extensions'
 require './maze'
 require './builder'
+require './solver'
+require './depth_solver'
 
 module MazeRunner
   @done = false
@@ -34,7 +36,10 @@ module MazeRunner
         n.draw(m)
         sleep(options[:display_time]) if options[:show_make]
       end
-      m.solve
+      DepthSolver.solution(m) do |n|
+        n.draw(m)
+        sleep(options[:display_time])
+      end
       sleep(2)
       m.erase
       break if done?
