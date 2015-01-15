@@ -23,8 +23,7 @@ module MazeRunner
   end
 
   def self.maze
-    Maze.new(options[:height], options[:width],
-      options[:display_time], options[:show_make])
+    Maze.new(options[:height], options[:width])
   end
 
   def self.run
@@ -32,6 +31,7 @@ module MazeRunner
     graceful_exit
     (0...options[:iterations]).each do
       m = maze
+      puts m.paint
       Builder.path(m) do |n|
         n.draw(m)
         sleep(options[:display_time]) if options[:show_make]
