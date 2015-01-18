@@ -100,6 +100,15 @@ module MazeRunner
         options[:show_make] = m
       end
 
+      solve_methods = %i(depth breadth)
+      solve_aliases = { 'depth-first' => :depth, 'breadth-first' => :breadth }
+      solution_list = (solve_aliases.keys + solve_methods).join(', ')
+
+      opts.on('-S', '--solve-method METHOD', solve_methods, solve_aliases,
+        "Select a solution method", "  (#{solution_list})") do |s|
+        options[:solve_method] = s
+      end
+
       opts.on_tail('--help', "Show this message") do
         puts opts
         exit
