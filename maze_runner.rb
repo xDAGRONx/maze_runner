@@ -4,6 +4,7 @@ require './maze'
 require './builder'
 require './solver'
 require './depth_solver'
+require './breadth_solver'
 
 module MazeRunner
   @done = false
@@ -14,6 +15,7 @@ module MazeRunner
       width: terminal_width / 2 - 2,
       display_time: 0.005,
       show_make: false,
+      solve_method: :breadth,
       iterations: Float::INFINITY
     }
   end
@@ -36,7 +38,7 @@ module MazeRunner
         n.draw(m)
         sleep(options[:display_time]) if options[:show_make]
       end
-      DepthSolver.solution(m) do |n|
+      solver.solution(m) do |n|
         n.draw(m)
         sleep(options[:display_time])
       end
@@ -53,6 +55,10 @@ module MazeRunner
   end
 
   private
+
+  def self.solver
+    Module.const_get("#{options[:solve_method].capitalize}Solver")
+  end
 
   def self.terminal_width
     HighLine::SystemExtensions.terminal_size.first
