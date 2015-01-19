@@ -6,12 +6,12 @@ class BreadthSolver < Solver
     super
   end
 
+  private
+
   def solve
     current_paths << Path.new([maze.start])
     build_path
   end
-
-  private
 
   def build_path
     current_paths.each { |p| solution << p.last.visit.dup unless p.last.visited? }
@@ -54,18 +54,5 @@ class BreadthSolver < Solver
     unvisited_neighbors(path.last).map do |n|
       Path.new(path.nodes, n)
     end
-  end
-
-  def unvisited_neighbors(node)
-    neighbors(node).select { |n| n.path? && !n.visited? }
-  end
-
-  def neighbors(node)
-    [
-      maze.get_node(node.row - 1, node.column),
-      maze.get_node(node.row + 1, node.column),
-      maze.get_node(node.row, node.column - 1),
-      maze.get_node(node.row, node.column + 1)
-    ].compact
   end
 end

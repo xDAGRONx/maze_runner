@@ -17,17 +17,4 @@ class DepthSolver < Solver
       end
     end
   end
-
-  def unvisited_neighbors(node)
-    neighbors(node).select { |n| n.path? && !n.visited? }
-  end
-
-  def neighbors(node)
-    [
-      maze.get_node(node.row - 1, node.column),
-      maze.get_node(node.row + 1, node.column),
-      maze.get_node(node.row, node.column - 1),
-      maze.get_node(node.row, node.column + 1)
-    ].compact
-  end
 end
